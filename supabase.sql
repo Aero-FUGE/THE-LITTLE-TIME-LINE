@@ -9,6 +9,10 @@ create table if not exists public.time_items (
   updated_at timestamptz not null default now()
 );
 
+alter table public.time_items add column if not exists estimate_min integer;
+alter table public.time_items add column if not exists deadline bigint;
+alter table public.time_items add column if not exists deadline_notified boolean not null default false;
+
 alter table public.time_items enable row level security;
 
 create policy "Users can read their own time items"
