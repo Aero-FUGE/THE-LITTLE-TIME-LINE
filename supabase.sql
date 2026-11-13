@@ -26,6 +26,40 @@ create table if not exists public.daily_tasks (
   updated_at timestamptz not null default now()
 );
 
+alter table public.daily_tasks add column if not exists hour integer;
+alter table public.daily_tasks add column if not exists minute integer;
+
+create table if not exists public.daily_routines (
+  id text primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  title text not null,
+  hour integer not null default 22,
+  minute integer not null default 0,
+  minutes integer not null default 20,
+  repeat text not null default 'daily',
+  weekday integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.daily_routines enable row level security;
+
+drop policy if exists "Users can read their own daily routines" on public.daily_routines;
+drop policy if exists "Users can insert their own daily routines" on public.daily_routines;
+drop policy if exists "Users can update their own daily routines" on public.daily_routines;
+drop policy if exists "Users can delete their own daily routines" on public.daily_routines;
+
+create policy "Users can read their own daily routines"
+  on public.daily_routines for select using (auth.uid() = user_id);
+
+create policy "Users can insert their own daily routines"
+  on public.daily_routines for insert with check (auth.uid() = user_id);
+
+create policy "Users can update their own daily routines"
+  on public.daily_routines for update using (auth.uid() = user_id);
+
+create policy "Users can delete their own daily routines"
+  on public.daily_routines for delete using (auth.uid() = user_id);
+
 alter table public.daily_tasks enable row level security;
 
 drop policy if exists "Users can read their own daily tasks" on public.daily_tasks;
