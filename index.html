@@ -53,6 +53,7 @@ body{background-image:radial-gradient(#d7c9b744 .7px,transparent .7px);backgroun
 'use strict';
 const KEY='little-dog-time-line-data-v1';
 const CLOUD_KEY='little-dog-time-line-cloud-config-v1';
+const DEFAULT_CLOUD_CONFIG={url:'https://gsqtoclbvwdchwargsub.supabase.co',key:'sb_publishable_ka7LwBYMxpLg0Y-1NAU2MQ_6IIy_z0u'};
 const COLORS=['#92bba3','#f1b09e','#b5a8d4','#edca83','#a6c4d9','#d9aabc'];
 const PX=1.85, PAD=35, TOTAL=PAD*2+PX*1440;
 const $=id=>document.getElementById(id);
@@ -69,7 +70,7 @@ function clock(ms){const d=new Date(ms);return String(d.getHours()).padStart(2,'
 function formatDuration(ms){const mins=Math.max(0,Math.floor(ms/60000));if(mins<1)return '不到 1 分钟';const h=Math.floor(mins/60),m=mins%60;return h?(h+' 小时'+(m?' '+m+' 分钟':'')):(m+' 分钟')}
 function safeAttr(s){return String(s??'').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll("'",'&#39;')}
 function toast(msg){clearTimeout(toastTimer);E.toast.textContent=msg;E.toast.classList.add('show');toastTimer=setTimeout(()=>E.toast.classList.remove('show'),2300)}
-function cloudConfig(){try{return JSON.parse(localStorage.getItem(CLOUD_KEY)||'null')}catch(e){return null}}
+function cloudConfig(){try{return JSON.parse(localStorage.getItem(CLOUD_KEY)||'null')||DEFAULT_CLOUD_CONFIG}catch(e){return DEFAULT_CLOUD_CONFIG}}
 function cloudReady(){return !!(cloud&&cloudUser)}
 function updateSyncUI(text){E.syncStatus.textContent=text||(!cloud?'仅保存在当前设备':cloudUser?'已同步 · '+(cloudUser.email||'当前账号'):'已配置，点击登录');E.syncBar.classList.toggle('online',cloudReady());E.syncBar.classList.toggle('syncing',text==='同步中…');E.syncBtn.textContent=cloudUser?'退出同步':cloud?'登录同步':'开启跨设备同步'}
 function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify({version:1,items}));storageOK=true;return true}catch(e){storageOK=false;toast('浏览器无法保存，请用右下角导出备份');return false}}
