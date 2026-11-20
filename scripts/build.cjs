@@ -7,6 +7,8 @@ for(const name of ['model.js','app.js'])html=html.replace(`<script src="${name}"
 // Inline scripts run after the DOM exists, while Supabase loads independently.
 html=html.replace(/<script>([\s\S]*?)<\/script>/g,(full,code)=>`<script>window.addEventListener('DOMContentLoaded',()=>{${code}\n});</script>`);
 fs.mkdirSync(path.join(root,'dist'),{recursive:true});
+for(const asset of ['日迹.ico','apple-touch-icon.png','manifest.webmanifest','icons'])fs.cpSync(path.join(root,asset),path.join(root,'dist',asset),{recursive:true});
 fs.writeFileSync(path.join(root,'dist/index.html'),html);
-fs.writeFileSync(path.join(root,'日迹_图标已植入_打开即用.html'),html);
+const standalone=html.replace(/href="日迹\.ico\?v=[^"]+"/,()=>`href="data:image/x-icon;base64,${fs.readFileSync(path.join(root,'日迹.ico')).toString('base64')}"`).replace(/href="apple-touch-icon\.png\?v=[^"]+"/,()=>`href="data:image/png;base64,${fs.readFileSync(path.join(root,'apple-touch-icon.png')).toString('base64')}"`).replace(/<link rel="manifest"[^>]*>/,'');
+fs.writeFileSync(path.join(root,'日迹_图标已植入_打开即用.html'),standalone);
 console.log('Built static and standalone editions');
